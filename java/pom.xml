@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example</groupId>
+  <artifactId>azure-fn-java</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>Azure Function — Datadog instrumented (Java)</name>
+
+  <properties>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <azure.functions.maven.plugin.version>1.36.0</azure.functions.maven.plugin.version>
+    <azure.functions.java.library.version>3.1.0</azure.functions.java.library.version>
+    <!-- Resolved at build time — bump when needed -->
+    <dd.java.agent.version>1.44.0</dd.java.agent.version>
+    <dd.serverless.compat.version>0.3.0</dd.serverless.compat.version>
+    <!-- Output directory for downloaded agent JARs -->
+    <agents.dir>${project.build.directory}/agents</agents.dir>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.microsoft.azure.functions</groupId>
+      <artifactId>azure-functions-java-library</artifactId>
+      <version>${azure.functions.java.library.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- Azure Functions Maven plugin -->
+      <plugin>
+        <groupId>com.microsoft.azure</groupId>
+        <artifactId>azure-functions-maven-plugin</artifactId>
+        <version>${azure.functions.maven.plugin.version}</version>
+        <configuration>
+          <appName>azure-fn-java-demo</appName>
+          <resourceGroup>myResourceGroup</resourceGroup>
+          <region>eastus</region>
+          <runtime>
+            <os>linux</os>
+            <javaVersion>21</javaVersion>
+          </runtime>
+        </configuration>
+        <executions>
+          <execution>
+            <id>package-functions</id>
+            <goals>
+              <goal>package</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--
+        Download Datadog agents into target/agents/ at build time.
+        These JARs are referenced by the JVM options in local.settings.json.
+        They are NOT added to the classpath — they are loaded as javaagents.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+
+          <!-- dd-java-agent (Datadog APM tracer) -->
+          <execution>
+            <id>download-dd-java-agent</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.datadoghq</groupId>
+                  <artifactId>dd-java-agent</artifactId>
+                  <version>${dd.java.agent.version}</version>
+                  <type>jar</type>
+                  <destFileName>dd-java-agent.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${agents.dir}</outputDirectory>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+
+          <!-- dd-serverless-compat-java-agent (Azure Functions compatibility layer) -->
+          <execution>
+            <id>download-dd-serverless-compat-agent</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.datadoghq</groupId>
+                  <artifactId>dd-serverless-compat-java-agent</artifactId>
+                  <version>${dd.serverless.compat.version}</version>
+                  <type>jar</type>
+                  <destFileName>dd-serverless-compat-java-agent.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${agents.dir}</outputDirectory>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>
