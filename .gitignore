@@ -11,6 +11,7 @@ dist/
 __pycache__/
 *.pyc
 .python_packages/
+deploy.zip
 
 # Java
 target/
