@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "languageWorkers__java__arguments": "-javaagent:target/agents/dd-serverless-compat-java-agent.jar -javaagent:target/agents/dd-java-agent.jar",
+    "DD_API_KEY": "<YOUR_DATADOG_API_KEY>",
+    "DD_SITE": "datadoghq.com",
+    "DD_SERVICE": "azure-fn-java",
+    "DD_ENV": "demo"
+  }
+}

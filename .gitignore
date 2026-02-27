@@ -1,0 +1,22 @@
+# Datadog secrets
+local.settings.json
+
+# Node.js
+node_modules/
+dist/
+.funcignore
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.python_packages/
+
+# Java
+target/
+*.jar
+
+# IDE
+.vscode/
+.idea/
+*.iml
