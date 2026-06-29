@@ -119,12 +119,12 @@ az functionapp create \
   --name azure-fn-nodejs-demo \
   --storage-account mystorageaccount
 
-# Set Datadog app settings
-az functionapp config appsettings set \
+# Set Datadog app settings (use 1Password CLI to avoid exposing the key in shell history)
+op run -- az functionapp config appsettings set \
   --name azure-fn-nodejs-demo \
   --resource-group myResourceGroup \
   --settings \
-    DD_API_KEY="<YOUR_KEY>" \
+    DD_API_KEY="op://datadog/datadog/DD_API_KEY" \
     DD_SITE="datadoghq.com" \
     DD_SERVICE="azure-fn-nodejs" \
     DD_ENV="production"

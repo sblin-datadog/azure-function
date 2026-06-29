@@ -132,12 +132,12 @@ az functionapp create \
 # Upload the agent JARs to a storage location accessible by the function app
 # (e.g. mount a storage share or include them in the deployment package)
 
-# Set Datadog app settings
-az functionapp config appsettings set \
+# Set Datadog app settings (use 1Password CLI to avoid exposing the key in shell history)
+op run -- az functionapp config appsettings set \
   --name azure-fn-java-demo \
   --resource-group myResourceGroup \
   --settings \
-    DD_API_KEY="<YOUR_KEY>" \
+    DD_API_KEY="op://datadog/datadog/DD_API_KEY" \
     DD_SITE="datadoghq.com" \
     DD_SERVICE="azure-fn-java" \
     DD_ENV="production" \
